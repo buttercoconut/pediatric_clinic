@@ -1,26 +1,22 @@
 <template>
-  <div class="patient-details">
-    <h2>{{ patient.name }}</h2>
-    <p><strong>Age:</strong> {{ patient.age }}</p>
-    <p><strong>Gender:</strong> {{ patient.gender }}</p>
-    <p><strong>Allergies:</strong> {{ patient.allergies.join(', ') }}</p>
+  <div>
+    <h2>Patient List</h2>
+    <ul>
+      <li v-for="patient in patients" :key="patient.id">
+        {{ patient.name }} ({{ patient.age }}세)
+      </li>
+    </ul>
   </div>
 </template>
 
 <script setup>
-import { defineProps } from 'vue';
-const props = defineProps({
-  patient: {
-    type: Object,
-    required: true,
-  },
-});
-</script>
+import { computed, onMounted } from 'vue'
+import { useStore } from 'vuex'
 
-<style scoped>
-.patient-details {
-  border: 1px solid #ccc;
-  padding: 1rem;
-  border-radius: 4px;
-}
-</style>
+const store = useStore()
+const patients = computed(() => store.getters['patient/allPatients'])
+
+onMounted(() => {
+  store.dispatch('patient/fetchPatients')
+})
+</script>

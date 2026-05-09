@@ -1,28 +1,21 @@
 <template>
-  <div class="appointment-list">
-    <h2>Upcoming Appointments</h2>
+  <div>
+    <h2>Appointment List</h2>
     <ul>
       <li v-for="appointment in appointments" :key="appointment.id">
-        {{ appointment.date }} - {{ appointment.doctor_name }}
+        {{ appointment.date }} - {{ appointment.doctorName }}
       </li>
     </ul>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
+import { ref, onMounted } from 'vue'
 
-const appointments = ref([]);
+const appointments = ref([])
 
 onMounted(async () => {
-  const response = await axios.get('/api/appointments');
-  appointments.value = response.data;
-});
+  const res = await fetch('/api/appointments')
+  appointments.value = await res.json()
+})
 </script>
-
-<style scoped>
-.appointment-list {
-  margin: 1rem;
-}
-</style>

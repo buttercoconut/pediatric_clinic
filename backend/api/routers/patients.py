@@ -1,19 +1,25 @@
+"""Patient router."""
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from ..database.database import get_db
-from ..api.models.models import Patient
-from ..core.services.patient_service import create_patient, get_patient
 
-router = APIRouter(prefix="/patients", tags=["patients"])
+from ..models.patient import PatientCreate, Patient
+from ..models.patient_db import PatientDB
+from ...core.services.patient_service import PatientService
+from ...database.database import get_db
 
-@router.post("/", response_model=Patient.PatientRead, status_code=status.HTTP_201_CREATED)
-def create_patient_endpoint(patient_in: Patient.PatientCreate, db: Session = Depends(get_db)):
-    patient = create_patient(db, patient_in)
+router = APIRouter()
+
+@router.post("/", response_model=Patient, status_code=status.HTTP_201_CREATED)
+def create_patient(patient_in: PatientCreate, db: Session = Depends(get_db)):
+    service = PatientService(db)
+    patient = service.create_patient(patient_in)
     return patient
 
-@router.get("/{patient_id}", response_model=Patient.PatientRead)
+@router.get("/{patient_id}", response_model=Patient)
 def read_patient(patient_id: int, db: Session = Depends(get_db)):
-    patient = get_patient(db, patient_id)
+    service = PatientService(db)
+    patient = service.get_patient(patient_id)
     if not patient:
         raise HTTPException(status_code=404, detail="Patient not found")
     return patient

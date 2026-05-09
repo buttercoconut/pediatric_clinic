@@ -1,14 +1,19 @@
+"""Main entry point for the FastAPI application."""
+
 from fastapi import FastAPI
-from .routers import patients, doctors, appointments
+from .api.routers import appointments, patients
+from .database.database import engine, Base
+
+# Create database tables
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Pediatric Clinic API")
 
-app.include_router(patients.router)
-app.include_router(doctors.router)
-app.include_router(appointments.router)
+# Include routers
+app.include_router(patients.router, prefix="/patients", tags=["patients"])
+app.include_router(appointments.router, prefix="/appointments", tags=["appointments"])
 
-# Create tables on startup
-@app.on_event("startup")
-def on_startup():
-    from ..database.database import engine, Base
-    Base.metadata.create_all(bind=engine)
+# Root endpoint
+@app.get("/")
+async def read_root():
+    return {"message": "Welcome to the Pediatric Clinic API"}

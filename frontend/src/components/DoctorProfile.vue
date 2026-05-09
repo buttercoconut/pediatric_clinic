@@ -1,25 +1,20 @@
 <template>
-  <div class="doctor-profile">
-    <h2>Dr. {{ doctor.name }}</h2>
-    <p>Specialty: {{ doctor.specialty }}</p>
-    <p>Experience: {{ doctor.years_of_experience }} years</p>
+  <div>
+    <h2>Doctor Profile</h2>
+    <div v-if="doctor">
+      <p>Name: {{ doctor.name }}</p>
+      <p>Specialty: {{ doctor.specialty }}</p>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { defineProps } from 'vue';
-const props = defineProps({
-  doctor: {
-    type: Object,
-    required: true,
-  },
-});
-</script>
+import { ref, onMounted } from 'vue'
 
-<style scoped>
-.doctor-profile {
-  border: 1px solid #ddd;
-  padding: 1rem;
-  border-radius: 4px;
-}
-</style>
+const doctor = ref(null)
+
+onMounted(async () => {
+  const res = await fetch('/api/doctors/1')
+  doctor.value = await res.json()
+})
+</script>
